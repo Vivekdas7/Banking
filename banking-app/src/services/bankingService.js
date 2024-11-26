@@ -224,65 +224,122 @@ export const getAccountBalance = async (user) => {
   }
 };
 
-export const getRecentTransactions = async (user) => {
-  if (!user) {
-    console.error('No user provided to getRecentTransactions');
-    return {
-      success: false,
-      error: 'User not found'
-    };
-  }
+// Mock data for testing
+const mockAccountData = {
+  balance: 5000.00,
+  totalIncome: 7500.00,
+  totalExpenses: 2500.00,
+  monthlySpending: 2500.00,
+  spendingByCategory: [
+    { category: 'Groceries', amount: 500 },
+    { category: 'Entertainment', amount: 300 },
+    { category: 'Utilities', amount: 400 },
+    { category: 'Transportation', amount: 200 },
+    { category: 'Shopping', amount: 600 },
+  ]
+};
 
+const mockAnalytics = {
+  totalSpending: 2500.00,
+  spendingByCategory: [
+    { category: 'Groceries', amount: 500 },
+    { category: 'Entertainment', amount: 300 },
+    { category: 'Utilities', amount: 400 },
+    { category: 'Transportation', amount: 200 },
+    { category: 'Shopping', amount: 600 },
+  ],
+  monthOverMonth: [
+    { month: 'Jan', amount: 2200 },
+    { month: 'Feb', amount: 2400 },
+    { month: 'Mar', amount: 2100 },
+    { month: 'Apr', amount: 2500 },
+    { month: 'May', amount: 2300 },
+    { month: 'Jun', amount: 2600 }
+  ],
+  topCategories: ['Shopping', 'Groceries', 'Utilities']
+};
+
+// Helper function to format currency
+export const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+};
+
+// Get account summary including balance and spending analytics
+export const getAccountSummary = async (userId) => {
   try {
-    const bankData = await getMetadata(user);
-    const transactions = bankData.transactions || [];
-    
-    // Sort transactions by date in descending order
-    const sortedTransactions = [...transactions].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-
+    // For now, return mock data
     return {
       success: true,
-      transactions: sortedTransactions
+      data: mockAccountData
     };
   } catch (error) {
-    console.error('Error getting recent transactions:', error);
+    console.error('Error fetching account summary:', error);
     return {
       success: false,
-      error: 'Failed to get recent transactions'
+      error: 'Failed to fetch account summary'
     };
   }
 };
 
-export const addTransaction = async (user, transactionData) => {
+// Get all transactions with optional pagination
+export const getRecentTransactions = async (userId, page = 1, limit = 20) => {
   try {
-    const metadata = await getMetadata(user);
-    const transactions = metadata.transactions || [];
+    // For now, return mock transactions
+    const mockTransactions = [
+      {
+        id: '1',
+        description: 'Grocery Shopping - Whole Foods',
+        amount: 156.78,
+        type: 'debit',
+        category: 'Groceries',
+        date: '2024-01-15T10:30:00Z'
+      },
+      {
+        id: '2',
+        description: 'Salary Deposit',
+        amount: 3500.00,
+        type: 'credit',
+        category: 'Income',
+        date: '2024-01-14T09:00:00Z'
+      },
+      // Add more mock transactions as needed
+    ];
 
-    // Add new transaction
+    return {
+      success: true,
+      transactions: mockTransactions
+    };
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    return {
+      success: false,
+      error: 'Failed to fetch transactions'
+    };
+  }
+};
+
+// Add a new transaction
+export const addTransaction = async (userId, transactionData) => {
+  try {
     const newTransaction = {
-      id: Date.now().toString(),
+      id: String(Date.now()),
+      userId,
+      description: transactionData.description,
+      amount: parseFloat(transactionData.amount),
+      type: transactionData.type,
+      category: transactionData.category,
       date: new Date().toISOString(),
-      ...transactionData
     };
 
-    transactions.push(newTransaction);
-    
-    // Update metadata
-    const success = await updateMetadata(user, {
-      ...metadata,
-      transactions
-    });
-
-    if (success) {
-      return {
-        success: true,
-        transaction: newTransaction
-      };
-    } else {
-      throw new Error('Failed to update metadata');
-    }
+    // In a real app, this would be saved to the database
+    // For now, just return the new transaction
+    return {
+      success: true,
+      transaction: newTransaction
+    };
   } catch (error) {
     console.error('Error adding transaction:', error);
     return {
@@ -292,77 +349,64 @@ export const addTransaction = async (user, transactionData) => {
   }
 };
 
-// Add some mock transactions if none exist
-export const initializeDefaultTransactions = async (user) => {
-  if (!user) {
-    console.error('No user provided to initializeDefaultTransactions');
+// Get spending analytics
+export const getSpendingAnalytics = async (userId, timeframe = 'month') => {
+  try {
+    // For now, return mock analytics
+    return {
+      success: true,
+      data: mockAnalytics
+    };
+  } catch (error) {
+    console.error('Error fetching spending analytics:', error);
     return {
       success: false,
-      error: 'User not found'
+      error: 'Failed to fetch spending analytics'
     };
   }
+};
 
+// Transfer money between users
+export const transferMoneyBetweenUsers = async ({ senderId, recipientEmail, amount, description }) => {
   try {
-    const bankData = await getMetadata(user);
-    
-    // Only initialize if no transactions exist
-    if (bankData.transactions && bankData.transactions.length > 0) {
-      return { success: true };
+    // Validate inputs
+    if (!senderId || !recipientEmail || !amount) {
+      throw new Error('Missing required transfer information');
     }
 
-    const currentDate = new Date();
-    const defaultTransactions = [
-      {
-        id: '1',
-        type: 'credit',
-        amount: 3000,
-        description: 'Salary Deposit',
-        category: 'Income',
-        date: new Date(currentDate.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '2',
-        type: 'debit',
-        amount: 800,
-        description: 'Rent Payment',
-        category: 'Housing',
-        date: new Date(currentDate.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '3',
-        type: 'debit',
-        amount: 100,
-        description: 'Grocery Shopping',
-        category: 'Food',
-        date: new Date(currentDate.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '4',
-        type: 'debit',
-        amount: 50,
-        description: 'Internet Bill',
-        category: 'Utilities',
-        date: new Date(currentDate.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '5',
-        type: 'credit',
-        amount: 500,
-        description: 'Freelance Payment',
-        category: 'Income',
-        date: new Date(currentDate.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
+    // In a real app, this would be an API call
+    // For now, we'll simulate a transfer with mock data
+    const transfer = {
+      id: `transfer-${Date.now()}`,
+      senderId,
+      recipientEmail,
+      amount,
+      description,
+      status: 'completed',
+      timestamp: new Date().toISOString(),
+    };
 
-    bankData.transactions = defaultTransactions;
-    await updateMetadata(user, bankData);
-    
-    return { success: true };
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Add transfer to mock transactions
+    mockTransactions.unshift({
+      id: transfer.id,
+      type: 'transfer',
+      amount: -amount,
+      description: `Transfer to ${recipientEmail}${description ? ': ' + description : ''}`,
+      category: 'Transfer',
+      date: transfer.timestamp,
+    });
+
+    return {
+      success: true,
+      data: transfer,
+    };
   } catch (error) {
-    console.error('Error initializing default transactions:', error);
     return {
       success: false,
-      error: 'Failed to initialize default transactions'
+      error: error.message || 'Transfer failed',
     };
   }
 };

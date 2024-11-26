@@ -190,16 +190,19 @@ function App() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              my: 'auto',
+              my: { xs: 2, sm: 4 },
+              mx: { xs: 2, sm: 'auto' },
+              width: '100%',
             }}
           >
             <Box
               sx={{
                 width: '100%',
                 bgcolor: 'background.paper',
-                borderRadius: 2,
+                borderRadius: { xs: 1, sm: 2 },
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
                 overflow: 'hidden',
+                p: { xs: 2, sm: 3 },
               }}
             >
               <Routes>
@@ -216,16 +219,41 @@ function App() {
                           rootBox: {
                             width: '100%',
                             margin: 0,
+                            padding: 0,
                           },
                           card: {
                             border: 'none',
                             boxShadow: 'none',
                             width: '100%',
+                            margin: 0,
+                            padding: 0,
                           },
                           formButtonPrimary: {
                             backgroundColor: theme.palette.primary.main,
                             '&:hover': {
                               backgroundColor: theme.palette.primary.dark,
+                            },
+                            width: '100%',
+                            marginTop: '1rem',
+                          },
+                          formFieldInput: {
+                            padding: '0.75rem',
+                            fontSize: '1rem',
+                            borderRadius: '0.5rem',
+                            '@media (max-width: 600px)': {
+                              padding: '0.5rem',
+                              fontSize: '0.875rem',
+                            },
+                          },
+                          footerActionLink: {
+                            color: theme.palette.primary.main,
+                            '&:hover': {
+                              color: theme.palette.primary.dark,
+                            },
+                          },
+                          header: {
+                            '@media (max-width: 600px)': {
+                              fontSize: '1.25rem',
                             },
                           },
                         },
@@ -246,16 +274,41 @@ function App() {
                           rootBox: {
                             width: '100%',
                             margin: 0,
+                            padding: 0,
                           },
                           card: {
                             border: 'none',
                             boxShadow: 'none',
                             width: '100%',
+                            margin: 0,
+                            padding: 0,
                           },
                           formButtonPrimary: {
                             backgroundColor: theme.palette.primary.main,
                             '&:hover': {
                               backgroundColor: theme.palette.primary.dark,
+                            },
+                            width: '100%',
+                            marginTop: '1rem',
+                          },
+                          formFieldInput: {
+                            padding: '0.75rem',
+                            fontSize: '1rem',
+                            borderRadius: '0.5rem',
+                            '@media (max-width: 600px)': {
+                              padding: '0.5rem',
+                              fontSize: '0.875rem',
+                            },
+                          },
+                          footerActionLink: {
+                            color: theme.palette.primary.main,
+                            '&:hover': {
+                              color: theme.palette.primary.dark,
+                            },
+                          },
+                          header: {
+                            '@media (max-width: 600px)': {
+                              fontSize: '1.25rem',
                             },
                           },
                         },

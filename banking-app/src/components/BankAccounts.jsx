@@ -121,13 +121,12 @@ const BankAccounts = () => {
       return;
     }
 
-    const result = await transferMoney(
-      user,
-      transferData.fromAccount,
-      transferData.toAccount,
+    const result = await transferMoney(user, {
+      fromAccountId: transferData.fromAccount,
+      toAccountId: transferData.toAccount,
       amount,
-      transferData.description
-    );
+      description: transferData.description
+    });
 
     if (result.success) {
       setNotification({

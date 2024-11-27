@@ -323,139 +323,113 @@ const simulateApiCall = async (data) => {
 // Mock third-party API data
 const mockThirdPartyData = {
   balance: {
-    currentBalance: 250000.00,
-    availableBalance: 245000.00,
-    pendingTransactions: 5000.00,
+    currentBalance: 25000.00,
+    availableBalance: 24500.00,
+    pendingTransactions: 500.00,
     lastUpdated: new Date().toISOString()
   },
   income: {
-    totalIncome: 750000.00,
-    monthlySalary: 50000.00,
-    bonuses: 20000.00,
-    investments: 10000.00,
-    otherIncome: 5000.00
+    totalIncome: 75000.00,
+    monthlySalary: 5000.00,
+    bonuses: 2000.00,
+    investments: 1000.00,
+    otherIncome: 500.00
   },
   expenses: {
-    totalExpenses: 35000.00,
+    totalExpenses: 3500.00,
     categories: {
-      housing: 15000.00,
-      utilities: 3000.00,
-      groceries: 4000.00,
-      transportation: 2000.00,
-      entertainment: 3000.00,
-      healthcare: 4000.00,
-      shopping: 4000.00
+      housing: 1500.00,
+      utilities: 300.00,
+      groceries: 400.00,
+      transportation: 200.00,
+      entertainment: 300.00,
+      healthcare: 400.00,
+      shopping: 400.00
     }
   }
 };
 
-// Mock transactions
-const generateMockTransactions = () => {
-  const categories = ['Housing', 'Utilities', 'Groceries', 'Transportation', 'Entertainment', 'Healthcare', 'Shopping'];
+// Generate mock transactions
+const generateMockTransactions = (count = 10) => {
+  const categories = ['Food', 'Shopping', 'Transport', 'Entertainment', 'Bills', 'Salary', 'Investment'];
   const descriptions = {
-    Housing: ['Rent Payment', 'Property Tax', 'Home Insurance', 'Maintenance Charges'],
-    Utilities: ['Electricity Bill', 'Water Bill', 'Internet Bill', 'Gas Bill'],
-    Groceries: ['Big Bazaar', 'DMart', 'Reliance Fresh', 'More Supermarket'],
-    Transportation: ['Petrol', 'Metro Card Recharge', 'Auto Fare', 'Car Service'],
-    Entertainment: ['Netflix Subscription', 'PVR Cinemas', 'Restaurant Bill', 'BookMyShow'],
-    Healthcare: ['Apollo Pharmacy', 'Doctor Consultation', 'Health Insurance', 'Lab Tests'],
-    Shopping: ['Amazon.in', 'Flipkart', 'Myntra', 'Lifestyle']
+    Food: ['Swiggy Order', 'Zomato Delivery', 'Restaurant Bill', 'Grocery Shopping'],
+    Shopping: ['Amazon.in', 'Flipkart', 'Myntra', 'Local Market'],
+    Transport: ['Uber Ride', 'Ola Cabs', 'Metro Card Recharge', 'Fuel'],
+    Entertainment: ['Netflix', 'Amazon Prime', 'Movie Tickets', 'Gaming'],
+    Bills: ['Electricity Bill', 'Water Bill', 'Internet Bill', 'Mobile Recharge'],
+    Salary: ['Monthly Salary', 'Bonus', 'Incentives'],
+    Investment: ['Mutual Fund', 'Fixed Deposit', 'Stocks', 'PPF'],
   };
 
-  const transactions = [];
-  const currentDate = new Date();
-
-  // Generate last 30 days of transactions
-  for (let i = 0; i < 30; i++) {
-    const numTransactions = Math.floor(Math.random() * 3) + 1; // 1-3 transactions per day
+  return Array.from({ length: count }, () => {
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const description = descriptions[category][Math.floor(Math.random() * descriptions[category].length)];
+    const type = category === 'Salary' ? 'income' : 'expense';
+    const baseAmount = type === 'income' ? 
+      Math.random() * 100000 + 50000 : // Income: ₹50,000 to ₹150,000
+      Math.random() * 5000 + 100;      // Expense: ₹100 to ₹5,100
     
-    for (let j = 0; j < numTransactions; j++) {
-      const category = categories[Math.floor(Math.random() * categories.length)];
-      const descList = descriptions[category];
-      const description = descList[Math.floor(Math.random() * descList.length)];
-      
-      // Generate amounts in Indian Rupee ranges
-      let amount;
-      switch (category) {
-        case 'Housing':
-          amount = Math.round(Math.random() * 15000 + 10000); // 10,000 - 25,000
-          break;
-        case 'Utilities':
-          amount = Math.round(Math.random() * 2000 + 500); // 500 - 2,500
-          break;
-        case 'Groceries':
-          amount = Math.round(Math.random() * 3000 + 500); // 500 - 3,500
-          break;
-        case 'Transportation':
-          amount = Math.round(Math.random() * 1000 + 100); // 100 - 1,100
-          break;
-        case 'Entertainment':
-          amount = Math.round(Math.random() * 2000 + 200); // 200 - 2,200
-          break;
-        case 'Healthcare':
-          amount = Math.round(Math.random() * 3000 + 500); // 500 - 3,500
-          break;
-        case 'Shopping':
-          amount = Math.round(Math.random() * 5000 + 500); // 500 - 5,500
-          break;
-        default:
-          amount = Math.round(Math.random() * 2000 + 500); // 500 - 2,500
-      }
-      
-      const date = new Date(currentDate);
-      date.setDate(date.getDate() - i);
-      
-      transactions.push({
-        id: `trans-${i}-${j}-${Date.now()}`,
-        date: date.toISOString(),
-        description,
-        category,
-        amount,
-        type: Math.random() > 0.2 ? 'expense' : 'income',
-        status: 'completed'
-      });
-    }
-  }
-
-  return transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      date: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
+      description,
+      category,
+      amount: Math.round(baseAmount * 100) / 100,
+      type,
+      status: Math.random() > 0.1 ? 'completed' : 'pending',
+    };
+  });
 };
 
 // Get account summary including balance and spending analytics
 export const getAccountSummary = async (userId) => {
   try {
-    const data = getLocalStorageData(userId);
-    
-    // Simulate third-party API calls
-    const [balanceData, incomeData, expensesData] = await Promise.all([
-      simulateApiCall(mockThirdPartyData.balance),
-      simulateApiCall(mockThirdPartyData.income),
-      simulateApiCall(mockThirdPartyData.expenses)
-    ]);
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Initialize transactions if empty
-    if (!data.transactions || data.transactions.length === 0) {
-      data.transactions = generateMockTransactions();
-      saveLocalStorageData(userId, data);
-    }
-
-    const recentTransactions = data.transactions
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 5);
+    // Generate mock data
+    const transactions = generateMockTransactions(20);
+    const totalIncome = transactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
 
     return {
       success: true,
       data: {
-        balance: balanceData,
-        income: incomeData,
-        expenses: expensesData,
-        recentTransactions,
-        accountCount: data.accounts.length || 1,
-        lastUpdated: new Date().toISOString()
-      }
+        balance: {
+          currentBalance: 250000, // ₹2,50,000
+          availableBalance: 225000, // ₹2,25,000
+          pendingTransactions: 25000, // ₹25,000
+        },
+        income: {
+          totalIncome: totalIncome,
+          monthlySalary: 75000, // ₹75,000
+          otherIncome: totalIncome - 75000,
+        },
+        expenses: {
+          totalExpenses: totalExpenses,
+          categories: {
+            Food: 15000, // ₹15,000
+            Shopping: 20000, // ₹20,000
+            Transport: 8000, // ₹8,000
+            Entertainment: 5000, // ₹5,000
+            Bills: 12000, // ₹12,000
+            Investment: 40000, // ₹40,000
+          },
+        },
+        recentTransactions: transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5),
+      },
     };
   } catch (error) {
-    console.error('Error getting account summary:', error);
-    return { success: false, error: 'Failed to get account summary' };
+    console.error('Error fetching account summary:', error);
+    return {
+      success: false,
+      error: 'Failed to fetch account summary',
+    };
   }
 };
 
@@ -466,7 +440,7 @@ export const getRecentTransactions = async (userId, page = 1, limit = 20) => {
     
     // Initialize transactions if empty
     if (!data.transactions || data.transactions.length === 0) {
-      data.transactions = generateMockTransactions();
+      data.transactions = generateMockTransactions(30);
       saveLocalStorageData(userId, data);
     }
 
@@ -541,12 +515,13 @@ export const getSpendingAnalytics = async (userId, timeframe = 'month') => {
   }
 };
 
-// Helper function to format currency in Indian Rupees
+// Format currency in Indian Rupees
 export const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    maximumFractionDigits: 0, // Remove decimal places
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 };
 
@@ -576,6 +551,57 @@ export const addTransaction = async (userId, transactionData) => {
     return {
       success: false,
       error: 'Failed to add transaction'
+    };
+  }
+};
+
+// Process card payment and transfer money
+export const processCardPayment = async (userId, paymentData) => {
+  try {
+    // In a real application, you would:
+    // 1. Call your backend API to create a payment intent
+    // 2. Process the payment through Stripe
+    // 3. Update the database with the transaction
+    
+    // For demo purposes, we'll simulate a successful payment
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const transaction = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      description: paymentData.description || 'Card Transfer',
+      amount: parseFloat(paymentData.amount),
+      type: 'expense',
+      category: 'Transfer',
+      status: 'completed',
+      paymentMethod: 'card',
+      recipient: paymentData.recipientEmail,
+      cardDetails: {
+        last4: paymentData.lastFour,
+        brand: paymentData.brand
+      }
+    };
+
+    // Update local storage
+    const data = getLocalStorageData(userId);
+    data.transactions = data.transactions || [];
+    data.transactions.push(transaction);
+    saveLocalStorageData(userId, data);
+
+    // Trigger data update event
+    window.dispatchEvent(new CustomEvent('bankDataUpdated', { 
+      detail: { userId, transactionType: 'card_payment' } 
+    }));
+
+    return {
+      success: true,
+      transaction
+    };
+  } catch (error) {
+    console.error('Error processing card payment:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to process card payment'
     };
   }
 };

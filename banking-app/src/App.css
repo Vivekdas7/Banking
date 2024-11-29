@@ -1,8 +1,91 @@
 #root {
-  max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
+}
+
+/* Responsive container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Responsive navigation */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .nav-menu {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Responsive card layouts */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: var(--card-bg, #fff);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsive forms */
+.form-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0.5rem;
+  }
+}
+
+/* Responsive tables */
+.responsive-table {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive images */
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Dashboard grid layout */
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .logo {
@@ -31,10 +114,6 @@
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
-}
-
-.card {
-  padding: 2em;
 }
 
 .read-the-docs {
